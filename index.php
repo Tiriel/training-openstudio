@@ -1,15 +1,19 @@
 <?php
 
 
+require __DIR__.'/Attribute/EventListener.php';
 require __DIR__.'/EventListenerInterface.php';
 require __DIR__.'/EventDispatcher.php';
 
-$dispatcher = new EventDispatcher();
-$dispatcher->addListener('foo', new class implements EventListenerInterface {
-    public function handle(object $event): void
+class FooEventListener
+{
+    #[Attribute\EventListener('foo')]
+    public function onFoo(object $event): void
     {
-        echo "Event handled: " . get_class($event) . "\n";
+        echo "Foo event handled\n";
     }
-});
+}
 
+$dispatcher = new EventDispatcher();
+$dispatcher->addListenersFrom(new FooEventListener());
 $dispatcher->dispatch(new class {}, 'foo');
