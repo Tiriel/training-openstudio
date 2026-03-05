@@ -1,13 +1,14 @@
 <?php
 
 
-require __DIR__.'/Attribute/EventListener.php';
-require __DIR__.'/EventListenerInterface.php';
-require __DIR__.'/EventDispatcher.php';
+use Tiriel\OpenstudioPhp\Attribute\EventListener;
+use Tiriel\OpenstudioPhp\EventDispatcher;
+
+require_once __DIR__.'/vendor/autoload.php';
 
 class FooEventListener
 {
-    #[Attribute\EventListener('foo')]
+    #[EventListener('foo')]
     public function onFoo(object $event): void
     {
         echo "Foo event handled\n";

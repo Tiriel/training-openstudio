@@ -1,6 +1,6 @@
 <?php
 
-namespace Attribute;
+namespace Tiriel\OpenstudioPhp\Attribute;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
 class EventListener
