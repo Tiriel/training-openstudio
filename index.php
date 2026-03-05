@@ -3,6 +3,7 @@
 
 use Tiriel\OpenstudioPhp\Attribute\EventListener;
 use Tiriel\OpenstudioPhp\EventDispatcher;
+use Tiriel\OpenstudioPhp\Exception\NoListenersException;
 
 require_once __DIR__.'/vendor/autoload.php';
 
@@ -17,4 +18,10 @@ class FooEventListener
 
 $dispatcher = new EventDispatcher();
 $dispatcher->addListenersFrom(new FooEventListener());
-$dispatcher->dispatch(new class {}, 'foo');
+
+try {
+    $dispatcher->dispatch(new class {
+    }, 'bar');
+} catch (NoListenersException $e) {
+    echo sprintf("%s Event : %s\n", $e->getMessage(), $e->eventName);
+}

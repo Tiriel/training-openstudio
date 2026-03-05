@@ -3,6 +3,7 @@
 namespace Tiriel\OpenstudioPhp;
 
 use Tiriel\OpenstudioPhp\Attribute\EventListener;
+use Tiriel\OpenstudioPhp\Exception\NoListenersException;
 
 class EventDispatcher
 {
@@ -29,6 +30,10 @@ class EventDispatcher
     public function dispatch(object $event, ?string $eventName = null): object
     {
         $eventName ??= $event::class;
+
+        if (!\array_key_exists($eventName, $this->listeners)) {
+            throw new NoListenersException($eventName);
+        }
 
         foreach ($this->listeners[$eventName] as $listener) {
             $listener instanceof EventListenerInterface
