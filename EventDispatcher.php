@@ -13,7 +13,7 @@ class EventDispatcher
 
     public function addListenersFrom(object $listener): void
     {
-        $reflection = new ReflectionClass($listener);
+        $reflection = new \ReflectionClass($listener);
 
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             foreach ($method->getAttributes(EventListener::class) as $attribute) {
