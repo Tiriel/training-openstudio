@@ -3,15 +3,20 @@
 namespace Tiriel\OpenstudioPhp;
 
 use Tiriel\OpenstudioPhp\Attribute\EventListener;
+use Tiriel\OpenstudioPhp\DataStructure\ListenerHeap;
 use Tiriel\OpenstudioPhp\Exception\NoListenersException;
 
 class EventDispatcher
 {
     private array $listeners = [];
 
-    public function addListener(string $eventName, callable|EventListenerInterface $listener): void
+    public function addListener(string $eventName, callable|EventListenerInterface $listener, int $priority = 0): void
     {
-        $this->listeners[$eventName][] = $listener;
+        if (!isset($this->listeners[$eventName])) {
+            $this->listeners[$eventName] = new ListenerHeap();
+        }
+
+        $this->listeners[$eventName]->insert($listener, $priority);
     }
 
     public function addListenersFrom(object $listener): void
@@ -22,7 +27,7 @@ class EventDispatcher
             foreach ($method->getAttributes(EventListener::class) as $attribute) {
                 /** @var EventListener $eventListener */
                 $eventListener = $attribute->newInstance();
-                $this->addListener($eventListener->eventName, [$listener, $method->getName()]);
+                $this->addListener($eventListener->eventName, [$listener, $method->getName()], $eventListener->priority);
             }
         }
     }
@@ -36,11 +41,20 @@ class EventDispatcher
         }
 
         foreach ($this->listeners[$eventName] as $listener) {
-            $listener instanceof EventListenerInterface
-                ? $listener->handle($event)
-                : $listener($event);
+            $this->doDispatch($listener, $event);
         }
 
         return $event;
+    }
+
+    protected function doDispatch(callable|EventListenerInterface $listener, object $event): void
+    {
+        if ($event instanceof AbstractEvent && $event->isPropagationStopped()) {
+            return;
+        }
+
+        $listener instanceof EventListenerInterface
+            ? $listener->handle($event)
+            : $listener($event);
     }
 }
