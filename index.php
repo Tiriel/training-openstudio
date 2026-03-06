@@ -3,6 +3,7 @@
 
 use Tiriel\OpenstudioPhp\AbstractEvent;
 use Tiriel\OpenstudioPhp\Attribute\EventListener;
+use Tiriel\OpenstudioPhp\AuditingEventDispatcher;
 use Tiriel\OpenstudioPhp\EventDispatcher;
 use Tiriel\OpenstudioPhp\Exception\NoListenersException;
 
@@ -33,7 +34,7 @@ class FooEventListener
     }
 }
 
-$dispatcher = new EventDispatcher();
+$dispatcher = new AuditingEventDispatcher(new EventDispatcher());
 $dispatcher->addListenersFrom(new FooEventListener());
 
 try {

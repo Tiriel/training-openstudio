@@ -2,12 +2,15 @@
 
 namespace Tiriel\OpenstudioPhp;
 
+use Tiriel\OpenstudioPhp\Attribute\AttributeParsingTrait;
 use Tiriel\OpenstudioPhp\Attribute\EventListener;
 use Tiriel\OpenstudioPhp\DataStructure\ListenerHeap;
 use Tiriel\OpenstudioPhp\Exception\NoListenersException;
 
-class EventDispatcher
+final class EventDispatcher implements EventDispatcherInterface
 {
+    use AttributeParsingTrait;
+
     private array $listeners = [];
 
     public function addListener(string $eventName, callable|EventListenerInterface $listener, int $priority = 0): void
@@ -17,19 +20,6 @@ class EventDispatcher
         }
 
         $this->listeners[$eventName]->insert($listener, $priority);
-    }
-
-    public function addListenersFrom(object $listener): void
-    {
-        $reflection = new \ReflectionClass($listener);
-
-        foreach ($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-            foreach ($method->getAttributes(EventListener::class) as $attribute) {
-                /** @var EventListener $eventListener */
-                $eventListener = $attribute->newInstance();
-                $this->addListener($eventListener->eventName, [$listener, $method->getName()], $eventListener->priority);
-            }
-        }
     }
 
     public function dispatch(object $event, ?string $eventName = null): object
@@ -47,7 +37,7 @@ class EventDispatcher
         return $event;
     }
 
-    protected function doDispatch(callable|EventListenerInterface $listener, object $event): void
+    private function doDispatch(callable|EventListenerInterface $listener, object $event): void
     {
         if ($event instanceof AbstractEvent && $event->isPropagationStopped()) {
             return;
