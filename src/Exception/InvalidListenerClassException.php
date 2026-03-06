@@ -2,7 +2,7 @@
 
 namespace Tiriel\OpenstudioPhp\Exception;
 
-class InvalidListenerException extends \InvalidArgumentException
+class InvalidListenerClassException extends \InvalidArgumentException
 {
     public function __construct(
         public readonly string $classname

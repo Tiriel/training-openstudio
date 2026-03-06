@@ -6,6 +6,7 @@ use Tiriel\OpenstudioPhp\Attribute\EventListener;
 use Tiriel\OpenstudioPhp\AuditingEventDispatcher;
 use Tiriel\OpenstudioPhp\EventDispatcher;
 use Tiriel\OpenstudioPhp\Exception\NoListenersException;
+use Tiriel\OpenstudioPhp\Resolver\InstantiatingResolver;
 
 require_once __DIR__.'/vendor/autoload.php';
 
@@ -34,12 +35,27 @@ class FooEventListener
     }
 }
 
-$dispatcher = new AuditingEventDispatcher(new EventDispatcher());
+class BarEventListener
+{
+    public function __invoke(object $event): void
+    {
+        echo "Bar event handled\n";
+    }
+}
+
+$dispatcher = new AuditingEventDispatcher(new EventDispatcher(new InstantiatingResolver()));
 $dispatcher->addListenersFrom(new FooEventListener());
+$dispatcher->addListener('bar', BarEventListener::class);
 
 try {
     $dispatcher->dispatch(new class extends AbstractEvent {
     }, 'foo');
+} catch (NoListenersException $e) {
+    echo sprintf("%s Event : %s\n", $e->getMessage(), $e->eventName);
+}
+try {
+    $dispatcher->dispatch(new class extends AbstractEvent {
+    }, 'bar');
 } catch (NoListenersException $e) {
     echo sprintf("%s Event : %s\n", $e->getMessage(), $e->eventName);
 }

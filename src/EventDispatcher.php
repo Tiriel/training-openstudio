@@ -5,7 +5,7 @@ namespace Tiriel\OpenstudioPhp;
 use Tiriel\OpenstudioPhp\Attribute\AttributeParsingTrait;
 use Tiriel\OpenstudioPhp\Attribute\EventListener;
 use Tiriel\OpenstudioPhp\DataStructure\ListenerHeap;
-use Tiriel\OpenstudioPhp\Exception\InvalidListenerException;
+use Tiriel\OpenstudioPhp\Exception\InvalidListenerClassException;
 use Tiriel\OpenstudioPhp\Exception\NoListenersException;
 use Tiriel\OpenstudioPhp\Resolver\ListenerResolverInterface;
 
@@ -23,7 +23,7 @@ final class EventDispatcher implements EventDispatcherInterface
     public function addListener(string $eventName, callable|EventListenerInterface|string $listener, int $priority = 0): void
     {
         if (\is_string($listener) && !\class_exists($listener)) {
-            throw new InvalidListenerException($listener);
+            throw new InvalidListenerClassException($listener);
         }
 
         $this->listeners[$eventName][$priority][] = $listener;
@@ -37,11 +37,12 @@ final class EventDispatcher implements EventDispatcherInterface
             throw new NoListenersException($eventName);
         }
 
-        $sortedListeners = $this->listeners[$eventName];
-        krsort($sortedListeners);
+        krsort($this->listeners[$eventName]);
 
-        foreach ($sortedListeners as $listener) {
-            $this->doDispatch($listener, $event);
+        foreach ($this->listeners[$eventName] as $sortedListeners) {
+            foreach ($sortedListeners as $listener) {
+                $this->doDispatch($listener, $event);
+            }
         }
 
         return $event;
@@ -53,6 +54,7 @@ final class EventDispatcher implements EventDispatcherInterface
             return;
         }
 
-        ($this->resolver->resolve($listener))($event);
+        $listener = $this->resolver->resolve($listener);
+        $listener($event);
     }
 }
