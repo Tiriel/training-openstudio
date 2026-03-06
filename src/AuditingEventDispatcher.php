@@ -16,7 +16,7 @@ class AuditingEventDispatcher implements EventDispatcherInterface
         private readonly EventDispatcherInterface $inner,
     ) {}
 
-    public function addListener(string $eventName, callable|EventListenerInterface $listener, int $priority = 0): void
+    public function addListener(string $eventName, callable|EventListenerInterface|string $listener, int $priority = 0): void
     {
         echo sprintf('[AUDIT] Added 1 listener to event "%s"%s', $eventName, PHP_EOL);
         $this->listenerCounts[$eventName] = ($this->listenerCounts[$eventName] ?? 0) + 1;

@@ -5,7 +5,9 @@ namespace Tiriel\OpenstudioPhp;
 use Tiriel\OpenstudioPhp\Attribute\AttributeParsingTrait;
 use Tiriel\OpenstudioPhp\Attribute\EventListener;
 use Tiriel\OpenstudioPhp\DataStructure\ListenerHeap;
+use Tiriel\OpenstudioPhp\Exception\InvalidListenerException;
 use Tiriel\OpenstudioPhp\Exception\NoListenersException;
+use Tiriel\OpenstudioPhp\Resolver\ListenerResolverInterface;
 
 final class EventDispatcher implements EventDispatcherInterface
 {
@@ -13,13 +15,18 @@ final class EventDispatcher implements EventDispatcherInterface
 
     private array $listeners = [];
 
-    public function addListener(string $eventName, callable|EventListenerInterface $listener, int $priority = 0): void
+    public function __construct(
+        private readonly ListenerResolverInterface $resolver,
+    ) {
+    }
+
+    public function addListener(string $eventName, callable|EventListenerInterface|string $listener, int $priority = 0): void
     {
-        if (!isset($this->listeners[$eventName])) {
-            $this->listeners[$eventName] = new ListenerHeap();
+        if (\is_string($listener) && !\class_exists($listener)) {
+            throw new InvalidListenerException($listener);
         }
 
-        $this->listeners[$eventName]->insert($listener, $priority);
+        $this->listeners[$eventName][$priority][] = $listener;
     }
 
     public function dispatch(object $event, ?string $eventName = null): object
@@ -30,21 +37,22 @@ final class EventDispatcher implements EventDispatcherInterface
             throw new NoListenersException($eventName);
         }
 
-        foreach ($this->listeners[$eventName] as $listener) {
+        $sortedListeners = $this->listeners[$eventName];
+        krsort($sortedListeners);
+
+        foreach ($sortedListeners as $listener) {
             $this->doDispatch($listener, $event);
         }
 
         return $event;
     }
 
-    private function doDispatch(callable|EventListenerInterface $listener, object $event): void
+    private function doDispatch(callable|EventListenerInterface|string $listener, object $event): void
     {
         if ($event instanceof AbstractEvent && $event->isPropagationStopped()) {
             return;
         }
 
-        $listener instanceof EventListenerInterface
-            ? $listener->handle($event)
-            : $listener($event);
+        ($this->resolver->resolve($listener))($event);
     }
 }
