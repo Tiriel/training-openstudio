@@ -6,7 +6,7 @@ use Tiriel\OpenstudioPhp\EventListenerInterface;
 
 trait DoResolveEventListenerTrait
 {
-    public function doResolve(callable|EventListenerInterface $listener): callable
+    public function doResolve(callable|object $listener): callable
     {
         if ($listener instanceof EventListenerInterface) {
             return $listener->handle(...);

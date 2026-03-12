@@ -10,7 +10,9 @@ class InstantiatingResolver implements ListenerResolverInterface
 
     public function resolve(mixed $listener): callable
     {
-        if (\is_string($listener) && \class_exists($listener)) {
+        if (\is_string($listener) && !\class_exists($listener)) {
+            throw new \InvalidArgumentException("Class not found");
+        } elseif (\is_string($listener) && \class_exists($listener)) {
             $listener = new $listener();
         }
 

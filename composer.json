@@ -3,7 +3,8 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "Tiriel\\OpenstudioPhp\\": "src/"
+            "Tiriel\\OpenstudioPhp\\": "src/",
+            "Tiriel\\OpenstudioPhp\\Tests\\": "tests/"
         }
     },
     "authors": [
