@@ -13,8 +13,15 @@ class MainController extends AbstractController
     public function index(Request $request): Response
     {
         $name = $request->query->get('name', 'World');
+        $html = <<<EOD
+<html lang="en">
+<body>
+  <h1>Hello $name</h1>
+</body>
+EOD;
 
-        return new Response("Hello $name!");
+
+        return new Response($html);
     }
 
     #[Route('/contact', name: 'app_main_contact', methods: ['GET'])]
