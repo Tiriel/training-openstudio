@@ -41,7 +41,7 @@ class ConferenceController extends AbstractController
         if ($request->isMethod('POST')) {
             $form->handleRequest($request);
         }
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $manager->persist($conference);
             $manager->flush();
