@@ -27,10 +27,12 @@ class ConferenceFixtures extends Fixture implements DependentFixtureInterface
                 ->setEndAt($end)
             ;
 
-            $conference->addOrganization($this->getReference(
-                    OrganizationFixtures::ORG_REF . $faker->numberBetween(0, 4),
-                    Organization::class
-            ));
+            for ($j = 0; $j < $faker->numberBetween(0, 3); $j++) {
+                $conference->addOrganization($this->getReference(
+                        OrganizationFixtures::ORG_REF . $faker->numberBetween(0, 4),
+                        Organization::class
+                ));
+            }
 
             $manager->persist($conference);
         }
