@@ -22,6 +22,10 @@ class Volunteering
     #[ORM\Column]
     private ?\DateTimeImmutable $endAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'volunteerings')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Conference $conference = null;
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -47,6 +51,18 @@ class Volunteering
     public function setEndAt(\DateTimeImmutable $endAt): static
     {
         $this->endAt = $endAt;
+
+        return $this;
+    }
+
+    public function getConference(): ?Conference
+    {
+        return $this->conference;
+    }
+
+    public function setConference(?Conference $conference): static
+    {
+        $this->conference = $conference;
 
         return $this;
     }
