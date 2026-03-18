@@ -2,6 +2,7 @@
 
 namespace App\Dto;
 
+use App\Entity\Organization;
 use Symfony\Component\Uid\Uuid;
 
 class ApiOrganization
@@ -53,5 +54,13 @@ class ApiOrganization
     {
         $this->createdAt = $createdAt;
         return $this;
+    }
+
+    public function toEntity(): Organization
+    {
+        return (new Organization())
+            ->setName($this->name)
+            ->setPresentation($this->presentation)
+            ->setCreatedAt($this->createdAt ?? new \DateTimeImmutable());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Dto;
 
+use App\Entity\Conference;
 use Symfony\Component\Uid\Uuid;
 
 class ApiConference
@@ -14,6 +15,9 @@ class ApiConference
     private ?\DateTimeImmutable $startAt = null;
     private ?\DateTimeImmutable $endAt = null;
     private array $volunteerings = [];
+    /**
+     * @var ApiOrganization[]
+     */
     private array $organizations = [];
 
     public function getId(): ?Uuid
@@ -125,5 +129,23 @@ class ApiConference
         }
 
         return $this;
+    }
+
+    public function toEntity(): Conference
+    {
+        $conference = (new Conference())
+            ->setName($this->getName())
+            ->setDescription($this->getDescription())
+            ->setAccessible($this->getAccessible())
+            ->setPrerequisites($this->getPrerequisites())
+            ->setStartAt($this->getStartAt())
+            ->setEndAt($this->getEndAt());
+        ;
+
+        foreach ($this->organizations as $organization) {
+            $conference->addOrganization($organization->toEntity());
+        }
+
+        return $conference;
     }
 }
