@@ -5,6 +5,14 @@ framework:
     # Note that the session will be started ONLY if you read or write from it.
     session: true
 
+    http_client:
+        scoped_clients:
+            conferences.client:
+                base_uri: 'https://www.devevents-api.fr'
+                headers:
+                    Accept: 'application/json'
+                    apikey: '%env(CONF_APIKEY)%'
+
     #esi: true
     #fragments: true
 
