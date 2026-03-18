@@ -16,8 +16,8 @@ class ConferenceFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         for ($i = 0; $i < 20; $i++) {
-            $start = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 year', '+1 year'));
-            $end = $start->modify('+ ' . $faker->numberBetween(1, 5) . ' days');
+            $start = \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('-1 year', '+1 year')->setTime('00', '00', '00'));
+            $end = $start->modify('+ ' . $faker->numberBetween(1, 5) . ' days')->setTime('18', '00', '00');
 
             $conference = (new Conference())
                 ->setName($faker->realText(30))
