@@ -31,7 +31,7 @@
                                                         class="fw-semibold">{{ conference.startAt|date('d M Y') }}</span>
                                                 to
                                                 <span class="fw-semibold">{{ conference.endAt|date('d M Y') }}</span></p>
-                                            <p class="my-0 fst-italic">{{ conference.volunteerings.count }} volunteers
+                                            <p class="my-0 fst-italic">{{ conference.volunteerings|length }} volunteers
                                                 yet.</p>
                                             <p class="mt-0">Accessible
                                                 : {{ conference.accessible ? '<span class="text-success">Yes</span>' : '<span class="text-danger">No</span>' }}</p>
