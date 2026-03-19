@@ -7,6 +7,7 @@ use App\Dto\ApiConference;
 use App\Entity\Conference;
 use App\Entity\Organization;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class TransformedConferenceHandler
@@ -14,6 +15,7 @@ class TransformedConferenceHandler
     public function __construct(
         private readonly EntityManagerInterface $manager,
         private readonly AuthorizationCheckerInterface $checker,
+        private readonly Security $security,
     ) {}
 
     public function handle(ApiConference $dto): ?Conference
@@ -32,6 +34,7 @@ class TransformedConferenceHandler
 
         if (null === $conference) {
             $conference = $dto->toEntity();
+            $conference->setCreatedBy($this->security->getUser());
             $conference->getOrganizations()->map(function (Organization $organization) {
                 return $this->getOrganization($organization);
             });

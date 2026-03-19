@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Dto\Contact;
-use App\Form\ContactType;
+use App\Form\Type\ContactType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -64,6 +64,10 @@ class Conference
     #[ORM\ManyToMany(targetEntity: Organization::class, mappedBy: 'conferences', cascade: ['persist'])]
     private Collection $organizations;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $createdBy = null;
+
     public function __construct()
     {
         $this->volunteerings = new ArrayCollection();
@@ -200,6 +204,18 @@ class Conference
         if ($this->organizations->removeElement($organization)) {
             $organization->removeConference($this);
         }
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
 
         return $this;
     }

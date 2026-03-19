@@ -9,6 +9,8 @@ use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class UserFixtures extends Fixture
 {
+    public const USER_REF = 'user-';
+
     public function __construct(
         private readonly PasswordHasherFactoryInterface $passwordHasherFactory,
     ) {}
@@ -23,6 +25,7 @@ class UserFixtures extends Fixture
         $password = $this->passwordHasherFactory->getPasswordHasher($user)->hash('admin');
         $user->setPassword($password);
         $manager->persist($user);
+        $this->addReference(self::USER_REF.'admin', $user);
 
         $user = (new User())
             ->setEmail('organizer@sensio-events.com')
@@ -32,6 +35,7 @@ class UserFixtures extends Fixture
         $password = $this->passwordHasherFactory->getPasswordHasher($user)->hash('organizer');
         $user->setPassword($password);
         $manager->persist($user);
+        $this->addReference(self::USER_REF.'organizer', $user);
 
         $user = (new User())
             ->setEmail('user@sensio-events.com')
@@ -41,6 +45,7 @@ class UserFixtures extends Fixture
         $password = $this->passwordHasherFactory->getPasswordHasher($user)->hash('user');
         $user->setPassword($password);
         $manager->persist($user);
+        $this->addReference(self::USER_REF.'user', $user);
 
         $manager->flush();
     }

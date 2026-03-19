@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Conference;
 use App\Entity\Organization;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -25,6 +26,7 @@ class ConferenceFixtures extends Fixture implements DependentFixtureInterface
                 ->setAccessible($faker->boolean())
                 ->setStartAt($start)
                 ->setEndAt($end)
+                ->setCreatedBy($this->getReference(UserFixtures::USER_REF.$faker->randomElement(['admin', 'organizer', 'user']), User::class))
             ;
 
             for ($j = 0; $j < $faker->numberBetween(0, 3); $j++) {
@@ -44,6 +46,7 @@ class ConferenceFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             OrganizationFixtures::class,
+            UserFixtures::class,
         ];
     }
 }
