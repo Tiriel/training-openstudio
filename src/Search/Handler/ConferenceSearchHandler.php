@@ -25,7 +25,7 @@ class ConferenceSearchHandler implements ConferenceSearchInterface
                 }
             }
         }
-        
+
         $conferences = [];
 
         foreach ($this->searches as $search) {

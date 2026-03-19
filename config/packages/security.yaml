@@ -11,6 +11,15 @@ security:
                 class: App\Entity\User
                 property: email
 
+    role_hierarchy:
+        ROLE_USER: ~
+        ROLE_WEBSITE: !php/const App\Constants\Roles::USER
+        ROLE_VOLUNTEER: !php/const App\Constants\Roles::USER
+        ROLE_ORGANIZER: !php/const App\Constants\Roles::VOLUNTEER
+        ROLE_ADMIN:
+            - !php/const App\Constants\Roles::ORGANIZER
+            - !php/const App\Constants\Roles::WEBSITE
+
     firewalls:
         dev:
             # Ensure dev tools and static assets are always allowed
