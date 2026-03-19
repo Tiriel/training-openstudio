@@ -50,6 +50,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Organization::class, inversedBy: 'users')]
     private Collection $organizations;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $apikey = null;
+
     public function __construct()
     {
         $this->volunteerings = new ArrayCollection();
@@ -187,6 +190,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeOrganization(Organization $organization): static
     {
         $this->organizations->removeElement($organization);
+
+        return $this;
+    }
+
+    public function getApikey(): ?string
+    {
+        return $this->apikey;
+    }
+
+    public function setApikey(): static
+    {
+        $this->apikey = \password_hash(\base64_encode(\random_bytes(48)), PASSWORD_BCRYPT);
 
         return $this;
     }

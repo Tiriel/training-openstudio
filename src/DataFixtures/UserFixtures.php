@@ -20,6 +20,7 @@ class UserFixtures extends Fixture
         $user = (new User())
             ->setEmail('admin@sensio-events.com')
             ->setRoles(['ROLE_USER', 'ROLE_ADMIN'])
+            ->setApikey()
         ;
         // WARNING: DO NOT EVER USE THIS WITH A PLAIN UNENCODED PASSWORD IN PRODUCTION THIS WAY
         $password = $this->passwordHasherFactory->getPasswordHasher($user)->hash('admin');
@@ -30,6 +31,7 @@ class UserFixtures extends Fixture
         $user = (new User())
             ->setEmail('organizer@sensio-events.com')
             ->setRoles(['ROLE_USER', 'ROLE_ORGANIZER'])
+            ->setApikey()
         ;
         // WARNING: DO NOT EVER USE THIS WITH A PLAIN UNENCODED PASSWORD IN PRODUCTION THIS WAY
         $password = $this->passwordHasherFactory->getPasswordHasher($user)->hash('organizer');
@@ -40,6 +42,7 @@ class UserFixtures extends Fixture
         $user = (new User())
             ->setEmail('user@sensio-events.com')
             ->setRoles(['ROLE_USER'])
+            ->setApikey()
         ;
         // WARNING: DO NOT EVER USE THIS WITH A PLAIN UNENCODED PASSWORD IN PRODUCTION THIS WAY
         $password = $this->passwordHasherFactory->getPasswordHasher($user)->hash('user');
