@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[Groups(['conference:list'])]
+#[Groups(['conference:list', 'conference:get'])]
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 class Conference
 {

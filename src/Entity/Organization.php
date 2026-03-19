@@ -8,28 +8,33 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OrganizationRepository::class)]
 class Organization
 {
+    #[Groups(['conference:list', 'conference:get'])]
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
+    #[Groups(['conference:list', 'conference:get'])]
     #[Assert\Length(min: 10)]
     #[Assert\NotBlank()]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['conference:get'])]
     #[Assert\Length(min: 30)]
     #[Assert\NotBlank()]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $presentation = null;
 
+    #[Groups(['conference:get'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 

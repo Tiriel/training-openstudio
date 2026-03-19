@@ -9,13 +9,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
 final class ConferenceController extends AbstractController
 {
-    #[Route('/api/conference', name: 'app_api_conference')]
+    #[Route('/api/conference', name: 'app_api_conference', methods: ['GET'])]
     public function index(Request $request, ConferenceRepository $repository): JsonResponse
     {
         $page = $request->query->get('page', 1);
@@ -31,7 +32,16 @@ final class ConferenceController extends AbstractController
         );
     }
 
-    #[Route('/api/conference/{id}/edit', name: 'app_api_conference_edit', methods: ['PUT'])]
+    #[Route('/api/conference/{id}', name: 'app_api_conference_get', requirements: ['id' => Requirement::UUID], methods: ['GET'])]
+    public function get(Conference $conference): JsonResponse
+    {
+        return $this->json($conference, context: [
+            AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => fn(object $o) => ['id' => $o->getId()],
+            AbstractNormalizer::GROUPS => ['conference:get'],
+        ]);
+    }
+
+    #[Route('/api/conference/{id}/edit', name: 'app_api_conference_edit', requirements: ['id' => Requirement::UUID], methods: ['PUT'])]
     public function edit(Request $request, Conference $conference, SerializerInterface $serializer, EntityManagerInterface $manager): JsonResponse
     {
         $data = $request->getContent();
@@ -45,7 +55,20 @@ final class ConferenceController extends AbstractController
             'conference' => $conference,
         ], context: [
             AbstractNormalizer::CIRCULAR_REFERENCE_HANDLER => fn(object $o) => ['id' => $o->getId()],
-            AbstractNormalizer::GROUPS => ['conference:list'],
+            AbstractNormalizer::GROUPS => ['conference:get'],
+        ]);
+    }
+
+    #[Route('/api/conference/{id}/delete', name: 'app_api_conference_delete', requirements: ['id' => Requirement::UUID], methods: ['DELETE'])]
+    public function delete(Conference $conference, EntityManagerInterface $manager): JsonResponse
+    {
+        $id = $conference->getId();
+        $manager->remove($conference);
+        $manager->flush();
+
+        return $this->json([
+            'message' => 'Conference deleted successfully',
+            'id' => $id,
         ]);
     }
 }

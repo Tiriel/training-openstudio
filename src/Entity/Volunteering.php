@@ -5,22 +5,26 @@ namespace App\Entity;
 use App\Repository\VolunteeringRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VolunteeringRepository::class)]
 class Volunteering
 {
+    #[Groups(['conference:list', 'conference:get'])]
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
+    #[Groups(['conference:list', 'conference:get'])]
     #[Assert\GreaterThanOrEqual(propertyPath: 'conference.startAt')]
     #[ORM\Column]
     private ?\DateTimeImmutable $startAt = null;
 
+    #[Groups(['conference:list', 'conference:get'])]
     #[Assert\GreaterThanOrEqual(propertyPath: 'startAt')]
     #[Assert\LessThanOrEqual(propertyPath: 'conference.endAt')]
     #[ORM\Column]
@@ -30,6 +34,7 @@ class Volunteering
     #[ORM\JoinColumn(nullable: false)]
     private ?Conference $conference = null;
 
+    #[Groups(['conference:list', 'conference:get'])]
     #[ORM\ManyToOne(inversedBy: 'volunteerings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $forUser = null;
