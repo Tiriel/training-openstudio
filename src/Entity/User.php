@@ -53,6 +53,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $apikey = null;
 
+    #[ORM\OneToOne(mappedBy: 'forUser', cascade: ['persist', 'remove'])]
+    private ?VolunteerProfile $profile = null;
+
     public function __construct()
     {
         $this->volunteerings = new ArrayCollection();
@@ -202,6 +205,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setApikey(): static
     {
         $this->apikey = \password_hash(\base64_encode(\random_bytes(48)), PASSWORD_BCRYPT);
+
+        return $this;
+    }
+
+    public function getProfile(): ?VolunteerProfile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(VolunteerProfile $profile): static
+    {
+        // set the owning side of the relation if necessary
+        if ($profile->getForUser() !== $this) {
+            $profile->setForUser($this);
+        }
+
+        $this->profile = $profile;
 
         return $this;
     }

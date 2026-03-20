@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Conference;
 use App\Entity\Organization;
+use App\Entity\Tag;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -36,6 +37,11 @@ class ConferenceFixtures extends Fixture implements DependentFixtureInterface
                 ));
             }
 
+            foreach ((array) array_rand(TagFixtures::TAGS, rand(1, 3)) as $key) {
+                $name = TagFixtures::TAGS[$key];
+                $conference->addTag($this->getReference(TagFixtures::TAG_NAME.$name, Tag::class));
+            }
+
             $manager->persist($conference);
         }
 
@@ -47,6 +53,7 @@ class ConferenceFixtures extends Fixture implements DependentFixtureInterface
         return [
             OrganizationFixtures::class,
             UserFixtures::class,
+            TagFixtures::class,
         ];
     }
 }
