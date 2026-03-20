@@ -15,11 +15,26 @@ framework:
                     max_retries: 2
                     multiplier: 3
             failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            sync: 'sync://'
 
         default_bus: messenger.bus.default
 
         buses:
+            command.bus:
+                default_middleware: false
+                middleware:
+                    - 'add_bus_name_stamp_middleware'
+                    - App\Middleware\PriorityRoutingMiddleware
+                    - App\Middleware\LoggingMiddleware
+                    - 'validation'
+                    - 'handle_message'
+                    - 'doctrine_transaction'
+            query.bus:
+                default_middleware: false
+                middleware:
+                    - App\Middleware\PriorityRoutingMiddleware
+                    - App\Middleware\LoggingMiddleware
+                    - 'handle_message'
             messenger.bus.default:
                 middleware:
                     - App\Middleware\PriorityRoutingMiddleware
