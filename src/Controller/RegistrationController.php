@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\VolunteerProfile;
-use App\Form\Type\RegistrationFormType;
+use App\Form\Type\AccountFormType;
 use App\Message\MatchVolunteerMessage;
 use App\Middleware\Stamp\PriorityStamp;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +27,7 @@ class RegistrationController extends AbstractController
         MessageBusInterface $bus,
     ): Response {
         $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $form = $this->createForm(AccountFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

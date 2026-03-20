@@ -5,7 +5,7 @@ namespace App\Dto;
 use App\Entity\Conference;
 use Symfony\Component\Uid\Uuid;
 
-class ApiConference
+class ApiConference implements EntityCastableInterface
 {
     private ?Uuid $id = null;
     private ?string $name = null;

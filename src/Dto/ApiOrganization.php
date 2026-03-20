@@ -5,7 +5,7 @@ namespace App\Dto;
 use App\Entity\Organization;
 use Symfony\Component\Uid\Uuid;
 
-class ApiOrganization
+class ApiOrganization implements EntityCastableInterface
 {
     private ?Uuid $id = null;
     private ?string $name = null;
