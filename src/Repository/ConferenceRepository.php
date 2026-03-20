@@ -3,6 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Conference;
+use App\Entity\Skill;
+use App\Entity\Tag;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,6 +46,42 @@ class ConferenceRepository extends ServiceEntityRepository
 
         return $qb->where($qb->expr()->like('c.name', ':name'))
             ->setParameter('name', '%' . $name . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findForTags(User $user): iterable
+    {
+        $qb = $this->createQueryBuilder('c');
+        $tagIds = $user
+            ->getProfile()
+            ->getInterests()
+            ->map(fn(Tag $tag) => $tag->getId());
+
+        return $qb
+            ->innerJoin('c.tags', 't')
+            ->where($qb->expr()->in('t.id', ':tagIds'))
+            ->setParameter('tagIds', $tagIds)
+            ->groupBy('c.id')
+            ->orderBy($qb->expr()->count('t.id'), 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findForSkills(User $user): iterable
+    {
+        $qb = $this->createQueryBuilder('c');
+        $skillIds = $user
+            ->getProfile()
+            ->getSkills()
+            ->map(fn(Skill $skill) => $skill->getId());
+
+        return $qb
+            ->innerJoin('c.neededSkills', 's')
+            ->where($qb->expr()->in('s.id', ':skillIds'))
+            ->setParameter('skillIds', $skillIds)
+            ->groupBy('c.id')
+            ->orderBy($qb->expr()->count('s.id'), 'DESC')
             ->getQuery()
             ->getResult();
     }
