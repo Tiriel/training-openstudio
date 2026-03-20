@@ -56,10 +56,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToOne(mappedBy: 'forUser', cascade: ['persist', 'remove'])]
     private ?VolunteerProfile $profile = null;
 
+    /**
+     * @var Collection<int, Matching>
+     */
+    #[ORM\OneToMany(targetEntity: Matching::class, mappedBy: 'forUser', orphanRemoval: true)]
+    private Collection $matchings;
+
     public function __construct()
     {
         $this->volunteerings = new ArrayCollection();
         $this->organizations = new ArrayCollection();
+        $this->matchings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -222,6 +229,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->profile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Matching>
+     */
+    public function getMatchings(): Collection
+    {
+        return $this->matchings;
+    }
+
+    public function addMatching(Matching $matching): static
+    {
+        if (!$this->matchings->contains($matching)) {
+            $this->matchings->add($matching);
+            $matching->setForUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMatching(Matching $matching): static
+    {
+        if ($this->matchings->removeElement($matching)) {
+            // set the owning side to null (unless already changed)
+            if ($matching->getForUser() === $this) {
+                $matching->setForUser(null);
+            }
+        }
 
         return $this;
     }
