@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Entity\VolunteerProfile;
 use App\Form\Type\RegistrationFormType;
 use App\Message\MatchVolunteerMessage;
+use App\Middleware\Stamp\PriorityStamp;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -43,7 +44,7 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             // do anything else you need here, like send an email
-            $bus->dispatch(new MatchVolunteerMessage($user->getId()));
+            $bus->dispatch(new MatchVolunteerMessage($user->getId()), [new PriorityStamp(10)]);
 
             return $security->login($user, 'form_login', 'main');
         }
