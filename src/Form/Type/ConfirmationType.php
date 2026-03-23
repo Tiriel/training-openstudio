@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Dto\Confirmation;
+use App\Dto\Registration;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -15,12 +15,8 @@ class ConfirmationType extends AbstractType
     {
         $builder
             ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
-                'constraints' => [
-                    new IsTrue(
-                        message: 'You should agree to our terms.',
-                    ),
-                ],
+                'label' => 'I agree to the terms and conditions',
+                'required' => true,
             ]);
     }
 
@@ -28,7 +24,10 @@ class ConfirmationType extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'data_class' => Confirmation::class
+                'label' => 'Confirmation',
+                'help' => 'Please confirm your registration details',
+                'data_class' => Registration::class,
+                'inherit_data' => true,
             ])
         ;
     }

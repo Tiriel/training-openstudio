@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Dto\Registration;
 use App\Entity\User;
 use App\Entity\VolunteerProfile;
 use App\Form\Type\AccountFormType;
+use App\Form\Type\RegistrationFormType;
 use App\Message\MatchVolunteerMessage;
 use App\Middleware\Stamp\PriorityStamp;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,19 +28,15 @@ class RegistrationController extends AbstractController
         EntityManagerInterface $entityManager,
         MessageBusInterface $bus,
     ): Response {
-        $user = new User();
-        $form = $this->createForm(AccountFormType::class, $user);
+        $registration = new Registration();
+        $form = $this->createForm(RegistrationFormType::class, $registration);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
-
-            // encode the plain password
+        if ($form->isSubmitted() && $form->isFinished() && $form->isValid()) {
+            $user = $registration->toEntity();
             $user
-                ->setProfile($form->get('profile')->getData())
                 ->setApikey()
-                ->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+                ->setPassword($userPasswordHasher->hashPassword($user, $user->getPassword()));
 
             $entityManager->persist($user);
             $entityManager->flush();
@@ -50,7 +48,7 @@ class RegistrationController extends AbstractController
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form,
+            'registrationForm' => $form->getStepForm(),
         ]);
     }
 }
